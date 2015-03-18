@@ -1,0 +1,56 @@
+<ui:composition template="/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<ui:define name="content">
+
+
+		<p:panel>
+
+			<h:form id="form">
+				<h:panelGrid columns="1" id="Artistas">
+
+					<h:outputLabel value="Data Início"></h:outputLabel>
+					<p:calendar locale="pt" showButtonPanel="true" navigator="true"
+						id="dtIncio" showOn="button"></p:calendar>
+
+					<h:outputLabel value="Data Fim"></h:outputLabel>
+					<p:calendar locale="pt" showButtonPanel="true" navigator="true"
+						id="dtFim" showOn="button"></p:calendar>
+
+					<h:outputLabel value="Cidade"></h:outputLabel>
+					<p:autoComplete id="acSimple" value="#{autocompleteController.text}"
+						completeMethod="#{autocompleteController.find()}" />
+				</h:panelGrid>
+
+				<p:commandButton value="Buscar" action="#{MBArtista.gravar}"></p:commandButton>
+			</h:form>
+			<br/>
+			<p:dataTable var="car" value="#{dtBasicView.cars}"
+				styleClass="userDataTableStyle">
+				<p:column headerText="Id">
+					<h:outputText value="#{car.id}" />
+				</p:column>
+
+				<p:column headerText="Year">
+					<h:outputText value="#{car.year}" />
+				</p:column>
+
+				<p:column headerText="Brand">
+					<h:outputText value="#{car.brand}" />
+				</p:column>
+
+				<p:column headerText="Color">
+					<h:outputText value="#{car.color}" />
+				</p:column>
+			</p:dataTable>
+
+		</p:panel>
+
+
+	</ui:define>
+</ui:composition>
+
+
