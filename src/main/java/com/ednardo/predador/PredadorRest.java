@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ednardo.predador.adapter.PredadorRSSAdapter;
-import com.ednardo.predador.dto.GloboTimesRSS;
+import com.ednardo.predador.dto.FonteInformacaoDTO;
 import com.ednardo.predador.dto.InformacaoDTO;
-import com.ednardo.predador.dto.ResponseNoticias;
-import com.ednardo.predador.model.Repository;
+import com.ednardo.predador.dto.TipoFonte;
+import com.ednardo.predador.fonte.rss.adapter.PredadorRSSAdapter;
+import com.ednardo.predador.model.RepositoryFonte;
+import com.ednardo.predador.model.RepositoryInformacao;
 
 @RestController
 public class PredadorRest {
@@ -24,38 +25,38 @@ public class PredadorRest {
 	private PredadorRSSAdapter adapter;
 
 	@Resource
-	@Qualifier("repository")
-	private Repository repository;
+	@Qualifier("repositoryInformacao")
+	private RepositoryInformacao repository;
 
-	@RequestMapping("/feeds")
-	public void coletaFeeds() {
-		for (String urlTime : GloboTimesRSS.timesRSS) {
-			try {
-				List<InformacaoDTO> noticias = adapter.getNoticias(urlTime);
-				for (InformacaoDTO noticiaDTO : noticias) {
-					repository.insereNoticia(noticiaDTO);
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+	@Resource
+	@Qualifier("repositoryFonte")
+	private RepositoryFonte repositoryFonte;
 
-	@RequestMapping("/noticias")
-	public List<InformacaoDTO> getNoticias() {
-		List<InformacaoDTO> noticias = repository.getNoticias();
+	@RequestMapping("/informacoesClube")
+	public List<InformacaoDTO> getInformacoes() {
+		List<InformacaoDTO> noticias = repository.getInformacoes();
 		System.out.println(noticias.size());
 		return noticias;
 	}
 
-	@RequestMapping(value = "/noticias/{clube}", method = RequestMethod.GET)
-	public List<InformacaoDTO> getNoticias(@PathVariable String clube) {
-		List<InformacaoDTO> noticias = repository.getNoticias(clube);
-		System.out.println(noticias.size());
-		ResponseNoticias response = new ResponseNoticias();
-		response.setNoticias(noticias);
-		return noticias;
+	@RequestMapping(value = "/informacoesClube/{clube}", method = RequestMethod.GET)
+	public List<InformacaoDTO> getInformacoes(@PathVariable String clube) {
+		List<InformacaoDTO> informacoes = repository.getInformacoes(clube);
+		System.out.println(informacoes.size());
+		return informacoes;
 	}
 
+	@RequestMapping("/fontesRss")
+	public List<FonteInformacaoDTO> getFontesRss() {
+		List<FonteInformacaoDTO> fontes = repositoryFonte.getFontesInformacoes(TipoFonte.FEED_RSS);
+		System.out.println(fontes.size());
+		return fontes;
+	}
+
+	@RequestMapping("/fontesTwitter")
+	public List<FonteInformacaoDTO> getFontesTwitter() {
+		List<FonteInformacaoDTO> fontes = repositoryFonte.getFontesInformacoes(TipoFonte.TWITTER);
+		System.out.println(fontes.size());
+		return fontes;
+	}
 }

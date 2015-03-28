@@ -1,0 +1,26 @@
+<!doctype html>
+<html ng-ap>
+<head>
+<title>Hello AngularJS</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<script src="springAngular.js"></script>
+</head>
+
+<body ng-controller="Hello">
+	<table class="table table-striped">
+		<tr>
+			<th> Titulo </th>
+			<th> Texto </th>
+			<th> Botao </th>
+		</tr>
+		<tr ng-repeat="informacao in informacoes">
+			<td>{{informacao.titulo}}</td>
+			<td>{{informacao.texto}}</td>
+			<td><a ng-click="delete(person)"><i class="icon-trash"></i></a></td>
+		</tr>
+	</table>
+</body>
+</html>

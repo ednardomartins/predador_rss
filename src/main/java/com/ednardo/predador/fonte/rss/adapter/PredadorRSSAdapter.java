@@ -1,4 +1,4 @@
-package com.ednardo.predador.adapter;
+package com.ednardo.predador.fonte.rss.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.ednardo.predador.dto.InformacaoDTO;
 
 @Component
-public class Repository {
+public class RepositoryInformacao {
 
 	public static final String CLUBES = "times";
 	public static final String INFORMACOES_CLUBES = "timesNoticias";
@@ -23,48 +24,50 @@ public class Repository {
 	private MongoOperations mongoOps;
 
 	@Bean
-	public Repository getRepository() {
-		return new Repository();
+	public RepositoryInformacao getRepository() {
+		return new RepositoryInformacao();
 	}
 
-	private static Logger log = Logger.getLogger(Repository.class);
+	private static Logger log = Logger.getLogger(RepositoryInformacao.class);
 
-	public void insereInformacao(List<InformacaoDTO> noticias) {
+	public void insereInformacao(List<InformacaoDTO> informacoes) {
 		try {
-			mongoOps.insert(noticias, INFORMACOES_CLUBES);
+			mongoOps.insert(informacoes, INFORMACOES_CLUBES);
 		} catch (Exception e) {
 			log.error("Erro ao inserir a lista de noticias", e);
 		}
 	}
 
-	public void insereNoticia(InformacaoDTO noticia) {
+	public void insereInformacao(InformacaoDTO informacao) {
 		try {
-			mongoOps.insert(noticia, INFORMACOES_CLUBES);
+			mongoOps.insert(informacao, INFORMACOES_CLUBES);
 		} catch (DuplicateKeyException due) {
-			log.warn("noticia com a chave: " + noticia.getId() + "duplicada.");
+			log.warn("noticia com a chave: " + informacao.getId() + "duplicada.");
 		} catch (Exception e) {
 			log.error("Erro ao inserir a lista de noticias", e);
 		}
 	}
 
-	public void update(InformacaoDTO noticia) {
+	public void update(InformacaoDTO informacao) {
 		try {
-			mongoOps.save(noticia, INFORMACOES_CLUBES);
+			mongoOps.save(informacao, INFORMACOES_CLUBES);
 		} catch (Exception e) {
 			log.error("Erro ao inserir a lista de noticias", e);
 		}
 	}
 
-	public InformacaoDTO getNoticia(String id) {
+	public InformacaoDTO getInformacao(String id) {
 		Query query = new Query(Criteria.where("_id").is(id));
 		return mongoOps.findOne(query, InformacaoDTO.class, INFORMACOES_CLUBES);
 	}
 
-	public List<InformacaoDTO> getNoticias() {
-		return mongoOps.findAll(InformacaoDTO.class, INFORMACOES_CLUBES);
+	public List<InformacaoDTO> getInformacoes() {
+		Query query = new Query();
+		query.with(new Sort(Sort.Direction.DESC, "data"));
+		return mongoOps.find(query, InformacaoDTO.class, INFORMACOES_CLUBES);
 	}
 
-	public List<InformacaoDTO> getNoticias(String clube) {
+	public List<InformacaoDTO> getInformacoes(String clube) {
 		Query query = new Query(Criteria.where("clube").is(clube));
 		return mongoOps.find(query, InformacaoDTO.class, INFORMACOES_CLUBES);
 	}
