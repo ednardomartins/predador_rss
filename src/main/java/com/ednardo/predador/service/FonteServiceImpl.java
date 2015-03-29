@@ -1,5 +1,6 @@
 package com.ednardo.predador.service;
 
+import java.io.File;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -38,5 +39,22 @@ public class FonteServiceImpl {
 			fonteInformacao.setTipoFonte(tipoFonte);
 			repository.insereFonteInformacao(fonteInformacao);
 		}
+	}
+
+	public void carregaFontes(File file, TipoFonte tipoFonte) {
+		List<ReaderDTO> dtos = CsvFileReader.readCsvFile(file);
+		for (ReaderDTO readerDTO : dtos) {
+			FonteInformacaoDTO fonteInformacao = new FonteInformacaoDTO();
+			try {
+				fonteInformacao.setIdFonte(HashGenerate.hashString(readerDTO.getUrl()));
+			} catch (Exception e) {
+				log.error("erro a gerar o hash id", e);
+			}
+			fonteInformacao.setNomeClube(readerDTO.getClube());
+			fonteInformacao.setUrl(readerDTO.getUrl());
+			fonteInformacao.setTipoFonte(tipoFonte);
+			repository.insereFonteInformacao(fonteInformacao);
+		}
+
 	}
 }

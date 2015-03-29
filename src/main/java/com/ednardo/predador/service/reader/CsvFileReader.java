@@ -1,8 +1,9 @@
 package com.ednardo.predador.service.reader;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * @author ashraf_sarhan
@@ -32,8 +34,10 @@ public class CsvFileReader {
 		CSVParser csvFileParser = null;
 		CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
 		try {
-			String path = Paths.get(CsvFileReader.class.getResource(fileName).toURI()).toString();
-			fileReader = new FileReader(path);
+			InputStream stream = CsvFileReader.class.getResourceAsStream(fileName);
+			System.out.println(stream);
+			ClassPathResource resource = new ClassPathResource(fileName);
+			fileReader = new FileReader(resource.getFile());
 			csvFileParser = new CSVParser(fileReader, csvFileFormat);
 			List<CSVRecord> csvRecords = csvFileParser.getRecords();
 			return convertToFonteInformacaoDTO(csvRecords);
@@ -58,5 +62,27 @@ public class CsvFileReader {
 			fontes.add(fonte);
 		}
 		return fontes;
+	}
+
+	public static List<ReaderDTO> readCsvFile(File file) {
+		FileReader fileReader = null;
+		CSVParser csvFileParser = null;
+		CSVFormat csvFileFormat = CSVFormat.DEFAULT.withHeader(FILE_HEADER_MAPPING);
+		try {
+			fileReader = new FileReader(file);
+			csvFileParser = new CSVParser(fileReader, csvFileFormat);
+			List<CSVRecord> csvRecords = csvFileParser.getRecords();
+			return convertToFonteInformacaoDTO(csvRecords);
+		} catch (Exception e) {
+			log.error("Erro ao converter arquivo csv: " + file.getName(), e);
+		} finally {
+			try {
+				fileReader.close();
+				csvFileParser.close();
+			} catch (IOException e) {
+				log.error("Erro ao fechar fileReader/csvFileParser: " + file.getName(), e);
+			}
+		}
+		return new ArrayList<ReaderDTO>();
 	}
 }

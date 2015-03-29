@@ -1,9 +1,15 @@
 package com.ednardo.predador;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +20,7 @@ import com.ednardo.predador.dto.FonteInformacaoDTO;
 import com.ednardo.predador.dto.InformacaoDTO;
 import com.ednardo.predador.dto.TipoFonte;
 import com.ednardo.predador.fonte.rss.adapter.PredadorRSSAdapter;
+import com.ednardo.predador.fonte.twitter.service.FonteTwitterServiceImpl;
 import com.ednardo.predador.model.RepositoryFonte;
 import com.ednardo.predador.model.RepositoryInformacao;
 
@@ -31,6 +38,27 @@ public class PredadorRest {
 	@Resource
 	@Qualifier("repositoryFonte")
 	private RepositoryFonte repositoryFonte;
+
+	@Resource
+	@Qualifier("fonteTwitterServiceImpl")
+	private FonteTwitterServiceImpl fontes;
+
+	@Autowired
+	ServletContext servletContext;
+
+	@PostConstruct
+	public void Init() {
+		String path = "";
+		try {
+			path = Paths
+					.get(servletContext.getClassLoader().getResource(FonteTwitterServiceImpl.ARQUIVO_FONTES_TWITTER)
+							.toURI()).toString();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		fontes.carregaFontesTwitter(new File(path));
+	}
 
 	@RequestMapping("/informacoesClube")
 	public List<InformacaoDTO> getInformacoes() {

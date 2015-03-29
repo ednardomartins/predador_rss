@@ -2,8 +2,10 @@ package com.ednardo.predador.model;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Sort;
@@ -20,7 +22,8 @@ public class RepositoryInformacao {
 	public static final String CLUBES = "times";
 	public static final String INFORMACOES_CLUBES = "timesNoticias";
 
-	@Autowired
+	@Resource
+	@Qualifier("connection")
 	private MongoOperations mongoOps;
 
 	@Bean
